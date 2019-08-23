@@ -1,0 +1,155 @@
+<html>
+  <head>
+  </head>
+  <body>
+  <script src="three.js"></script>
+  <script>
+    let container, scene, camera, renderer, session, controllerMeshes;
+
+    const controllerGeometry = new THREE.BoxBufferGeometry(0.1, 0.2, 0.01);
+    const controllerMaterial = new THREE.MeshPhongMaterial({
+      color: 0x4caf50,
+    });
+    const _makeControllerMesh = (x = 0, y = 0, z = 0, qx = 0, qy = 0, qz = 0, qw = 1) => {
+      const mesh = new THREE.Mesh(controllerGeometry, controllerMaterial);
+      mesh.position.set(x, y, z);
+      mesh.quaternion.set(qx, qy, qz, qw);
+      // mesh.matrix.compose(mesh.position, mesh.quaternion, mesh.scale);
+      mesh.updateMatrix();
+      mesh.updateMatrixWorld();
+      mesh.matrixAutoUpdate = false;
+      mesh.frustumCulled = false;
+      return mesh;
+    };
+
+    function init() {
+      container = document.createElement('div');
+      document.body.appendChild(container);
+
+      scene = new THREE.Scene();
+      scene.matrixAutoUpdate = false;
+      // scene.background = new THREE.Color(0x3B3961);
+
+      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+      // camera.position.set(0, 1, 0);
+      // camera.lookAt(new THREE.Vector3());
+      scene.add(camera);
+
+      // const ambientLight = new THREE.AmbientLight(0x333333);
+      const ambientLight = new THREE.AmbientLight(0x808080);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0x808080, 1);
+      directionalLight.position.set(1, 1, 1);
+      scene.add(directionalLight);
+
+      controllerMeshes = [
+        _makeControllerMesh(-0.1),
+        _makeControllerMesh(0.1),
+      ];
+      controllerMeshes.forEach(controllerMesh => {
+        scene.add(controllerMesh);
+      });
+
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+      });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      // window.browser.magicleap.RequestDepthPopulation(true);
+      // renderer.autoClearDepth = false;
+
+      container.appendChild(renderer.domElement);
+
+      const _makeIframe = (url) => {
+        const iframe = document.createElement('iframe');
+        iframe.addEventListener('load', () => {
+          console.log(`iframe loaded:  ${iframe.src}`);
+        });
+        iframe.addEventListener('error', err => {
+          console.log(`iframe load error: ${iframe.src} ${err.stack}`);
+        });
+        iframe.d = 3;
+        iframe.src = url;
+        return iframe;
+      };
+      // _makeIframe("https://cryptovoxels.com/play");
+      _makeIframe("https://aframe.io/a-painter/");
+
+      renderer.setAnimationLoop(animate);
+    }
+
+    function animate(time, frame) {
+      if (renderer.vr.enabled) {
+        const inputSources = session.getInputSources();
+        const gamepads = navigator.getGamepads();
+
+        for (let i = 0; i < controllerMeshes.length; i++) {
+          controllerMeshes[i].visible = false;
+        }
+
+        for (let i = 0; i < inputSources.length; i++) {
+          {
+            const inputSource = inputSources[i];
+            const pose = frame.getInputPose(inputSource);
+
+            const controllerIndex = _getControllerIndex(inputSource);
+            const controllerMesh = controllerMeshes[controllerIndex];
+            controllerMesh.matrix.fromArray(pose.targetRay.transformMatrix);
+            controllerMesh.updateMatrixWorld(true);
+            controllerMesh.visible = true;
+          }
+
+
+        }
+      } else {
+
+      }
+
+      renderer.render(scene, renderer.vr.enabled ? renderer.vr.getCamera(camera) : camera);
+    }
+
+    init();
+
+
+
+    (async () => {
+      console.log('request session');
+      session = await navigator.xr.requestSession({
+        exclusive: true,
+      }).catch(err => Promise.resolve(null));
+
+      if (session) {
+        session.onselect = () => {
+
+
+        };
+
+        session.requestAnimationFrame((timestamp, frame) => {
+          renderer.vr.setSession(session, {
+            frameOfReferenceType: 'stage',
+          });
+
+          const {views} = frame.getViewerPose();
+          const viewport = session.baseLayer.getViewport(views[0]);
+          const width = viewport.width;
+          const height = viewport.height;
+
+          renderer.setSize(width * 2, height);
+
+          renderer.setAnimationLoop(null);
+
+          renderer.vr.enabled = true;
+          renderer.vr.setAnimationLoop(animate);
+
+          console.log('running!');
+        });
+      } else {
+        console.log('no xr devices');
+      }
+    })();
+  </script>
+  </body>
+</html>
