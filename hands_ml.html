@@ -5,15 +5,6 @@
    <meta name="viewport" content="width=device-width, initial-scale=1">
    <meta name="theme-color" content="#008000"/>
    <title>hands_ml</title>
-   <link rel="manifest" href="hands_ml_manifest.json">
-   <script>
-    if('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/hands_ml_sw.js')
-        .then(function() {
-          console.log('Service Worker Registered');
-        });
-    }
-   </script>
    <style>
      body {
        margin: 0;
@@ -21,12 +12,12 @@
    </style>
   </head>
   <body>
-  <h1>hands_ml.html example</h1> 
+  <h1>hands_ml.html example</h1>
   <script src="three.js"></script>
   <script>
     let container, scene, camera, session, controllerMeshes, handMeshes;
     // let handTracker;
-    
+
     const boneVsh = `
       uniform vec3 offsetPosition;
       uniform vec4 offsetQuaternion;
@@ -188,7 +179,7 @@
         // mesh.visible = true;
         mesh.frustumCulled = false;
         mesh.matrixAutoUpdate = false;
-        
+
         const _makeFingerMesh = () => {
           const gaugeBackMesh = (() => {
             const geometry = new THREE.BoxBufferGeometry(0.01, 0.1, 0.01)
@@ -278,7 +269,7 @@
               // mesh.matrix.decompose(mesh.position, mesh.quaternion, mesh.scale);
               // mesh.updateMatrixWorld();
               // mesh.matrix.decompose(mesh.position, mesh.quaternion, mesh.scale);
-            
+
               const gamepad = navigator.getGamepads()[i];
               const {buttons, bones} = gamepad;
               for (let j = 0; j < 5; j++) {
@@ -309,7 +300,7 @@
             }
           }
         };
-        
+
         return mesh;
       };
       controllerMeshes = [
@@ -432,7 +423,7 @@
               mesh.matrix.fromArray(pose.transform.inverse.matrix);
               mesh.matrix.decompose(mesh.position, mesh.quaternion, mesh.scale);
               mesh.updateMatrixWorld(true);
-              
+
               mesh.visible = true;
             } else {
               mesh.visible = false;

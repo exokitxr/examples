@@ -5,7 +5,6 @@
    <meta name="viewport" content="width=device-width, initial-scale=1">
    <meta name="theme-color" content="#008000"/>
    <title>fuzz</title>
-   <!-- <link rel="manifest" href="hello_ml_manifest.json"> -->
    <style>
       body {
         margin: 0;
@@ -49,7 +48,7 @@
       // renderer.autoClear = false;
 
       container.appendChild(renderer.domElement);
-      
+
       layers = [renderer.domElement];
 
       renderer.setAnimationLoop(animate);
@@ -108,7 +107,7 @@
             iframe.onerror = err => {
               console.warn(err.stack);
             };
-            
+
             setTimeout(_reload, Math.random() * 2000);
           };
           _reload();

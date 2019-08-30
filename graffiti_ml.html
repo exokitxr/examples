@@ -5,15 +5,6 @@
    <meta name="viewport" content="width=device-width, initial-scale=1">
    <meta name="theme-color" content="#008000"/>
    <title>graffiti_ml</title>
-   <link rel="manifest" href="graffiti_ml_manifest.json">
-   <script>
-    if('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/graffiti_ml_sw.js')
-        .then(function() {
-              console.log('Service Worker Registered');
-        });
-    }
-   </script>
     <style>
       body {
         margin: 0;
@@ -379,7 +370,7 @@ function animate(time, frame) {
     for (let i = 0; i < inputSources.length; i++) {
       const inputSource = inputSources[i];
       const pose = frame.getInputPose(inputSource);
-      
+
       const controllerIndex = _getControllerIndex(inputSource);
       const controllerMesh = controllerMeshes[controllerIndex];
       controllerMesh.matrix.fromArray(pose.targetRay.transformMatrix);

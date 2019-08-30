@@ -5,15 +5,6 @@
    <meta name="viewport" content="width=device-width, initial-scale=1">
    <meta name="theme-color" content="#008000"/>
    <title>bow_ml</title>
-   <link rel="manifest" href="bow_ml_manifest.json">
-   <script>
-    if('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/bow_ml_sw.js')
-        .then(function() {
-              console.log('Service Worker Registered');
-        });
-    }
-   </script>
     <style>
       body {
         margin: 0;
@@ -536,7 +527,7 @@
               if (pinchedIndex === handIndex) {
                 pinchedSeen = true;
               }
-              
+
               pinchMesh.position.fromArray(pointer.position);
               pinchMesh.quaternion.fromArray(pointer.rotation);
               pinchMesh.visible = true;
